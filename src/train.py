@@ -83,7 +83,7 @@ def main(args: argparse.Namespace) -> None:
                                  parameters,
                                  scoring=args.scoring,
                                  cv=args.cv_splits,
-                                 n_jobs=-1,
+                                 n_jobs=args.n_jobs,
                                  verbose=4)
 
     # fit on data
@@ -153,6 +153,11 @@ if __name__ == "__main__":
                         type=int,
                         default=5,
                         help="number of cross-validation splits")
+    parser.add_argument(
+        "--n-jobs",
+        type=int,
+        default=1,
+        help="number of parallel jobs, specify -1 to use all processors")
     parser.add_argument("--precision-threshold",
                         type=float,
                         default=0.99,
