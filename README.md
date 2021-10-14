@@ -60,7 +60,11 @@ In order to train, cross-validate and evaluate the model, simply execute:
 $ python3 src/train.py
 ```
 
-This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `joblib` serialized pickle. In order to use this model for downstream tasks, it is highly recommended to use the same Python and Scikit-Learn versions when loading this `joblib` pickle.
+This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `joblib` serialized pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
+
+**Note:** In order to use this model for downstream tasks, it is highly recommended to use the same Python and Scikit-Learn versions when loading this `joblib` pickle.
+
+
 
 ## Test :microscope:
 
