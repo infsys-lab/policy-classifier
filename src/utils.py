@@ -65,6 +65,19 @@ def get_formatted_logger(level: str) -> logging.Logger:
     return logger
 
 
+def add_file_handler(logger: logging.Logger, filename: str) -> None:
+    # create formatter
+    formatter = logging.Formatter(FORMAT)
+
+    # create file handler
+    file_handler = logging.FileHandler(filename)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+
+    # add file handler to logger
+    logger.addHandler(file_handler)
+
+
 class Sorting_Help_Formatter(argparse.HelpFormatter):
     """ Formatter for sorting argument options alphabetically """
 
