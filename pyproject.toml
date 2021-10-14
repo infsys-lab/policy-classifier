@@ -12,7 +12,21 @@ scikit-learn = "^1.0"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"
+mypy = "^0.910"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+allow_redefinition = true
+files = "src"
+
+[[tool.mypy.overrides]]
+module = [
+    "pandas",
+    "numpy",
+    "ipdb",
+    "sklearn.*"
+]
+ignore_missing_imports = true
