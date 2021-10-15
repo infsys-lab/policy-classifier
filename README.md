@@ -74,7 +74,7 @@ In order to use a dumped model for downstream tasks, it is necessary to set up a
 
 ```python
 # load necessary dependencies
-from zlib import decompress
+from gzip import decompress
 from dill import loads
 
 # load the raw compressed model as bytes

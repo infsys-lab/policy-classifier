@@ -13,7 +13,7 @@ from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
 import argparse
-import zlib
+import gzip
 import ipdb
 import json
 import dill
@@ -142,7 +142,7 @@ def main(args: argparse.Namespace) -> None:
 
     # dump model
     LOGGER.info("Dumping final model to disk: %s" % final_model_file)
-    final_model_bytes = zlib.compress(dill.dumps(final_model))
+    final_model_bytes = gzip.compress(dill.dumps(final_model))
     with open(final_model_file, "wb") as output_file_stream:
         output_file_stream.write(final_model_bytes)
 
