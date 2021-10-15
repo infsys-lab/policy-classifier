@@ -70,7 +70,7 @@ This workflow will create a run directory in `./runs` and will dump all necessar
 
 ### Import
 
-In order to use a dumped model for downstream tasks, it is necessary to set up a virtual environment with the same Python and Scikit-Learn versions as this repository. Not doing so could result in unforeseen errors during the unpickling phase. Below is a code-snipped documenting how to import the best saved model:
+In order to use a dumped model for downstream tasks, it is necessary to set up a virtual environment with the same Python and Scikit-Learn versions as this repository. Not doing so could result in unforeseen errors during the unpickling phase. Below is a code-snippet documenting how to import the best saved model:
 
 ```python
 # load necessary dependencies
