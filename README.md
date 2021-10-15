@@ -64,17 +64,20 @@ In order to train, cross-validate and evaluate the model, simply execute:
 $ python3 src/train.py
 ```
 
-This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill` serialized pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
+This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill.gz` compressed pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
 
 ### Import
 
 In order to use a dumped model for downstream tasks, it is necessary to set up a virtual environment with the same Python and Scikit-Learn versions as this repository. Not doing so could result in unforeseen errors during the unpickling phase. Below is a code-snipped documenting how to import the best saved model:
 
 ```python
-from dill import load
+from zlib import decompress
+from dill import loads
 
-with open("path/to/model.dill", "rb") as input_file_stream:
-    model = load(input_file_stream)
+with open("path/to/model.dill.gz", "rb") as input_file_stream:
+    model = input_file_stream.read()
+ 
+model = loads(decompress(model))
 ```
 
 ## Test :microscope:
