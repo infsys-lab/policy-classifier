@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from typing import Dict, Any
 from utils import (  # type: ignore
     ArgparseFormatter, file_path, get_formatted_logger, timestamp,
     add_file_handler)
@@ -75,7 +76,7 @@ def main(args: argparse.Namespace) -> None:
         ipdb.set_trace()
     else:
         # define grid-search parameters
-        parameters = {
+        parameters: Dict[Any, Any] = {  # type: ignore
             "vect__ngram_range": [(1, 2), (1, 4)],
             "vect__min_df": (0.1, 0.2, 0.3),
             "clf__max_depth": (10, 15),
