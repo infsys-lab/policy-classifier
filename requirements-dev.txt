@@ -2,6 +2,7 @@ appnope==0.1.2; sys_platform == "darwin" and python_version >= "3.7"
 backcall==0.2.0; python_version >= "3.7"
 colorama==0.4.4; python_version >= "3.7" and python_full_version < "3.0.0" and sys_platform == "win32" or sys_platform == "win32" and python_version >= "3.7" and python_full_version >= "3.5.0"
 decorator==5.1.0; python_version >= "3.7"
+dill==0.3.4; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.1.0")
 ipdb==0.13.9; python_version >= "2.7"
 ipython==7.28.0; python_version >= "3.7"
 jedi==0.18.0; python_version >= "3.7"
