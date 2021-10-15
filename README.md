@@ -26,8 +26,10 @@ $ pip install -r requirements.txt
 
 ## Usage :snowflake:
 
+### Train
+
 ```
-usage: train.py [-h] [--cv-splits <int>]
+usage: train.py [-h] [--cv-splits <int>] [--debug]
                 [--logging-level {debug,info,warning,error,critical}]
                 [--n-jobs <int>] [--policies-csv <file_path>]
                 [--precision-threshold <float>] [--random-seed <int>]
@@ -36,6 +38,8 @@ usage: train.py [-h] [--cv-splits <int>]
 optional arguments:
   --cv-splits            <int>
                          number of cross-validation splits (default: 5)
+  --debug                <flag>
+                         flag to debug script (default: False)
   --logging-level        {debug,info,warning,error,critical}
                          set logging level (default: info)
   --n-jobs               <int>
@@ -60,11 +64,18 @@ In order to train, cross-validate and evaluate the model, simply execute:
 $ python3 src/train.py
 ```
 
-This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `joblib` serialized pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
+This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill` serialized pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
 
-**Note:** In order to use this model for downstream tasks, it is highly recommended to use the same Python and Scikit-Learn versions when loading this `joblib` pickle.
+### Import
 
+In order to use a dumped model for downstream tasks, it is necessary to set up a virtual environment with the same Python and Scikit-Learn versions as this repository. Not doing so could result in unforeseen errors during the unpickling phase. Below is a code-snipped documenting how to import the best saved model:
 
+```python
+from dill import load
+
+with open("path/to/model.dill", "rb") as input_file_stream:
+    model = load(input_file_stream)
+```
 
 ## Test :microscope:
 
