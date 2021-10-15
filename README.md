@@ -1,6 +1,6 @@
 # policy-classifier
 
-This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier based on input TF-IDF text features. 
+This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier based on input TF-IDF text features. This model expects input text to be in `markdown` format and has its own pre-processing pipelines. 
 
 ## Dependencies :mag:
 
@@ -66,18 +66,26 @@ $ python3 src/train.py
 
 This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill.gz` compressed pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
 
+**Note:** This repository comes shipped with a ready-to-use model run in `./runs/run_1634285445`. Below we provide instructions on how to import and utilize the best model for downstream predictions.
+
 ### Import
 
 In order to use a dumped model for downstream tasks, it is necessary to set up a virtual environment with the same Python and Scikit-Learn versions as this repository. Not doing so could result in unforeseen errors during the unpickling phase. Below is a code-snipped documenting how to import the best saved model:
 
 ```python
+# load necessary dependencies
 from zlib import decompress
 from dill import loads
 
+# load the raw compressed model as bytes
 with open("path/to/model.dill.gz", "rb") as input_file_stream:
     model = input_file_stream.read()
- 
+
+# decompress and unpickle
 model = loads(decompress(model))
+
+# predict and provide probabilities for text being a privacy policy
+model.predict_proba(["some markdown text", "some policy text"])[:,1]
 ```
 
 ## Test :microscope:
