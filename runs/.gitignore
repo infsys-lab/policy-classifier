@@ -1,3 +1,4 @@
 *.log
 *.json
-*.dill
+*.dill.gz
+!run_1634285445/*
