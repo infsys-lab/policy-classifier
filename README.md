@@ -66,7 +66,7 @@ $ python3 src/train.py
 
 This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill.gz` compressed pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
 
-**Note:** This repository comes shipped with a ready-to-use model run in `./runs/run_1634285445`. Below we provide instructions on how to import and utilize the best model for downstream predictions.
+**Note:** This repository comes shipped with a ready-to-use model run in `./runs/run_1634294167`. Below we provide instructions on how to import and utilize the best model for downstream predictions.
 
 ### Import
 
