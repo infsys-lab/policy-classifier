@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
 import argparse
+import zlib
 import ipdb
 import json
 import dill
@@ -136,10 +137,14 @@ def main(args: argparse.Namespace) -> None:
 
     # refit final model
     LOGGER.info("Refitting final model on all data available")
-    final_policy_clf = gs_policy_clf.best_estimator_.fit(X, y)
-    with open(os.path.join(run_dir, "final_model.dill"),
-              "wb") as output_file_stream:
-        dill.dump(final_policy_clf, output_file_stream)
+    final_model = gs_policy_clf.best_estimator_.fit(X, y)
+    final_model_file = os.path.join(run_dir, "final_model.dill.gz")
+
+    # dump model
+    LOGGER.info("Dumping final model to disk: %s" % final_model_file)
+    final_model_bytes = zlib.compress(dill.dumps(final_model))
+    with open(final_model_file, "wb") as output_file_stream:
+        output_file_stream.write(final_model_bytes)
 
 
 if __name__ == "__main__":
