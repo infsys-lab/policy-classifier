@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from joblib import dump
 from utils import (  # type: ignore
     ArgparseFormatter, file_path, get_formatted_logger, timestamp,
     add_file_handler)
@@ -13,20 +12,24 @@ from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
 import argparse
+import ipdb
 import json
+import dill
 import os
+import re
+
+# define global dill setting
+dill.settings['recurse'] = True
 
 
-def standardize_text(df: pd.DataFrame, text_field: str) -> pd.DataFrame:
-    df[text_field] = df[text_field].str.replace(r"http\S+", "", regex=True)
-    df[text_field] = df[text_field].str.replace(r"http", "", regex=True)
-    df[text_field] = df[text_field].str.replace(r"@\S+", "", regex=True)
-    df[text_field] = df[text_field].str.replace(
-        r"[^A-Za-z0-9(),!?@\'\`\"\_\n]", " ", regex=True)
-    df[text_field] = df[text_field].str.replace(r"@", "at", regex=True)
-    df[text_field] = df[text_field].str.replace(r"\n", " ", regex=True)
-    df[text_field] = df[text_field].str.lower()
-    return df
+def preprocess(document: str) -> str:
+    document = re.sub(r"http\S+", "", document)
+    document = re.sub(r"http", "", document)
+    document = re.sub(r"@\S+", "", document)
+    document = re.sub(r"[^A-Za-z0-9(),!?@\'\`\"\_\n]", " ", document)
+    document = re.sub(r"@", "at", document)
+    document = re.sub(r"\n", " ", document)
+    return document.lower()
 
 
 def main(args: argparse.Namespace) -> None:
@@ -48,35 +51,38 @@ def main(args: argparse.Namespace) -> None:
 
     # read in csv data and standardize
     df = pd.read_csv(args.policies_csv)
-    df = standardize_text(df, "policy_text")
-
-    # perform sanity check to ensure no html tags
-    assert not df["policy_text"].str.contains(r"<|>", regex=True).any()
 
     # define inputs and outputs
-    X = df["policy_text"]
-    y = df["is_policy"].apply(int)
+    X = df["policy_text"].tolist()
+    y = df["is_policy"].apply(int).tolist()
+
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.1, random_state=args.random_seed)
 
     # define pipeline for classifier
     policy_clf = Pipeline([
-        ('vect', TfidfVectorizer(stop_words="english")),
+        ('vect', TfidfVectorizer(stop_words="english",
+                                 preprocessor=preprocess)),
         ('clf',
          RandomForestClassifier(class_weight="balanced",
                                 random_state=args.random_seed)),
     ])
     LOGGER.info("Base classifier: %s" % policy_clf)
 
-    # define grid-search parameters
-    parameters = {
-        "vect__ngram_range": [(1, 2), (1, 4)],
-        "vect__min_df": (0.1, 0.2, 0.3),
-        "clf__max_depth": (10, 15),
-        "clf__n_estimators": (100, 200),
-        "clf__min_samples_leaf": (2, 3)
-    }
-    LOGGER.info("Grid-search parameters %s" % parameters)
+    if args.debug:
+        parameters = {"vect__ngram_range": [(1, 2)]}
+        args.cv_splits = 2
+        ipdb.set_trace()
+    else:
+        # define grid-search parameters
+        parameters = {
+            "vect__ngram_range": [(1, 2), (1, 4)],
+            "vect__min_df": (0.1, 0.2, 0.3),
+            "clf__max_depth": (10, 15),
+            "clf__n_estimators": (100, 200),
+            "clf__min_samples_leaf": (2, 3)
+        }
+        LOGGER.info("Grid-search parameters %s" % parameters)
 
     # define grid-search model wrapper
     gs_policy_clf = GridSearchCV(policy_clf,
@@ -130,7 +136,9 @@ def main(args: argparse.Namespace) -> None:
     # refit final model
     LOGGER.info("Refitting final model on all data available")
     final_policy_clf = gs_policy_clf.best_estimator_.fit(X, y)
-    dump(final_policy_clf, os.path.join(run_dir, "final_model.joblib"))
+    with open(os.path.join(run_dir, "final_model.dill"),
+              "wb") as output_file_stream:
+        dill.dump(final_policy_clf, output_file_stream)
 
 
 if __name__ == "__main__":
@@ -168,5 +176,8 @@ if __name__ == "__main__":
         choices=["debug", "info", "warning", "error", "critical"],
         default="info",
         help="set logging level")
+    parser.add_argument("--debug",
+                        action="store_true",
+                        help="flag to debug script")
     LOGGER = get_formatted_logger(parser.parse_known_args()[0].logging_level)
     main(parser.parse_args())
