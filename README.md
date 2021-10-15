@@ -1,6 +1,6 @@
 # policy-classifier
 
-This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier based on input TF-IDF text features. This model expects input text to be in `markdown` format and has its own pre-processing pipelines. 
+This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier based on input TF-IDF text features. This model expects input text to be in `markdown` format and has its own pre-processing pipeline. 
 
 ## Dependencies :mag:
 
