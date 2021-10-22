@@ -1,6 +1,6 @@
 # policy-classifier
 
-This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier based on input TF-IDF text features. This model expects input text to be in `markdown` format and has its own pre-processing pipeline. 
+This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier based on input TF-IDF text features. Our classifier is trained on annotated privacy-policy documents which have been released alongside the [Princeton-Leuven Longitudinal Corpus of Privacy Policies](https://privacypolicies.cs.princeton.edu). The classifier expects input text to be in `markdown` format and has its own pre-processing pipeline. 
 
 ## Dependencies :mag:
 
@@ -12,7 +12,7 @@ $ pip install -r requirements.txt
 
 ## Initialization :fire:
 
-1. To download manually annotated policies data from [Princeton](https://privacypolicies.cs.princeton.edu/data-release/data/) and prepare the data for training, simply execute:
+1. To download and prepare annotated privacy-policies data for training, simply execute:
 
     ```
     $ bash scripts/prepare_data.sh
