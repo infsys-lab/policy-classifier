@@ -11,8 +11,7 @@ import re
 
 # create formatter
 FORMATTER = logging.Formatter(
-    fmt="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S")
+    "%(asctime)s | %(levelname)s | %(filename)s | %(funcName)s | %(message)s")
 
 
 def timestamp() -> str:
