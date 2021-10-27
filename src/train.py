@@ -63,9 +63,9 @@ def main(args: argparse.Namespace) -> None:
 
     # define pipeline for classifier
     policy_clf = Pipeline([
-        ('vect', TfidfVectorizer(stop_words="english",
+        ("vect", TfidfVectorizer(stop_words="english",
                                  preprocessor=preprocess)),
-        ('clf',
+        ("clf",
          RandomForestClassifier(class_weight="balanced",
                                 random_state=args.random_seed)),
     ])
