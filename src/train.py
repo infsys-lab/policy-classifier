@@ -3,7 +3,7 @@
 
 from typing import Dict, Any
 from utils import (  # type: ignore
-    ArgparseFormatter, file_path, get_formatted_logger, timestamp,
+    ArgparseFormatter, file_path, add_stream_handler, timestamp,
     add_file_handler)
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import GridSearchCV, train_test_split
@@ -46,8 +46,8 @@ def main(args: argparse.Namespace) -> None:
 
     # update logger
     global LOGGER
-    LOGGER = add_file_handler(LOGGER, args.logging_level,
-                              os.path.join(run_dir, "session.log"))
+    add_file_handler(LOGGER, args.logging_level,
+                     os.path.join(run_dir, "session.log"))
 
     # log and dump args file
     args_file = os.path.join(run_dir, "args.json")
@@ -190,6 +190,5 @@ if __name__ == "__main__":
     parser.add_argument("--debug",
                         action="store_true",
                         help="flag to debug script")
-    LOGGER = get_formatted_logger(LOGGER,
-                                  parser.parse_known_args()[0].logging_level)
+    add_stream_handler(LOGGER, parser.parse_known_args()[0].logging_level)
     main(parser.parse_args())

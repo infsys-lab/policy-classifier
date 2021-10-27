@@ -35,7 +35,7 @@ def file_path(path: str) -> str:
         raise argparse.ArgumentTypeError("%s is not a valid file" % path)
 
 
-def get_formatted_logger(logger: logging.Logger, level: str) -> logging.Logger:
+def add_stream_handler(logger: logging.Logger, level: str) -> None:
     """ Create a sane logger """
     # set logger level
     logger.setLevel(level)
@@ -48,12 +48,9 @@ def get_formatted_logger(logger: logging.Logger, level: str) -> logging.Logger:
     # add stream to logger
     logger.addHandler(stderr_handler)
 
-    # return final logger
-    return logger
-
 
 def add_file_handler(logger: logging.Logger, level: str,
-                     filename: str) -> logging.Logger:
+                     filename: str) -> None:
     """ Commit logger output to disk """
     # create file handler
     file_handler = logging.FileHandler(filename)
@@ -66,9 +63,6 @@ def add_file_handler(logger: logging.Logger, level: str,
 
     # add file handler to logger
     logger.addHandler(file_handler)
-
-    # return final logger
-    return logger
 
 
 class Sorting_Help_Formatter(argparse.HelpFormatter):
