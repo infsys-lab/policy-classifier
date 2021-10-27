@@ -9,11 +9,14 @@ import logging
 import os
 import re
 
-FORMAT = (
-    '%(asctime)s | %(levelname)s | %(filename)s | %(funcName)s | %(message)s')
+# create formatter
+FORMATTER = logging.Formatter(
+    fmt="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S")
 
 
 def timestamp() -> str:
+    """ Return UNIX-style epoch for timestamping """
     return str(int(datetime.now().timestamp()))
 
 
@@ -33,30 +36,15 @@ def file_path(path: str) -> str:
         raise argparse.ArgumentTypeError("%s is not a valid file" % path)
 
 
-def get_formatted_logger(level: str) -> logging.Logger:
+def get_formatted_logger(logger: logging.Logger, level: str) -> logging.Logger:
     """ Create a sane logger """
-    # get root logger
-    logger = logging.getLogger()
-
-    # define logger levels
-    levels = {
-        'critical': logging.CRITICAL,
-        'error': logging.ERROR,
-        'warning': logging.WARNING,
-        'info': logging.INFO,
-        'debug': logging.DEBUG
-    }
-
     # set logger level
-    logger.setLevel(levels[level.lower()])
-
-    # create formatter
-    formatter = logging.Formatter(FORMAT)
+    logger.setLevel(level)
 
     # set output stream to stdout
     stderr_handler = logging.StreamHandler()
     stderr_handler.setLevel(logging.DEBUG)
-    stderr_handler.setFormatter(formatter)
+    stderr_handler.setFormatter(FORMATTER)
 
     # add stream to logger
     logger.addHandler(stderr_handler)
@@ -65,17 +53,23 @@ def get_formatted_logger(level: str) -> logging.Logger:
     return logger
 
 
-def add_file_handler(logger: logging.Logger, filename: str) -> None:
-    # create formatter
-    formatter = logging.Formatter(FORMAT)
-
+def add_file_handler(logger: logging.Logger, level: str,
+                     filename: str) -> logging.Logger:
+    """ Commit logger output to disk """
     # create file handler
     file_handler = logging.FileHandler(filename)
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
+
+    # set logging level
+    file_handler.setLevel(level)
+
+    # set formatter
+    file_handler.setFormatter(FORMATTER)
 
     # add file handler to logger
     logger.addHandler(file_handler)
+
+    # return final logger
+    return logger
 
 
 class Sorting_Help_Formatter(argparse.HelpFormatter):
@@ -83,14 +77,14 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
 
     # source: https://stackoverflow.com/a/12269143
     def add_arguments(self, actions: Iterable[argparse.Action]) -> None:
-        actions = sorted(actions, key=attrgetter('option_strings'))
+        actions = sorted(actions, key=attrgetter("option_strings"))
         super(Sorting_Help_Formatter, self).add_arguments(actions)
 
     def _format_usage(self, usage: str, actions: Iterable[argparse.Action],
                       groups: Iterable[argparse._ArgumentGroup],
                       prefix: Optional[str]) -> str:
         if prefix is None:
-            prefix = ('usage: ')
+            prefix = ("usage: ")
 
         # if usage is specified, use that
         if usage is not None:
@@ -98,11 +92,11 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
 
         # if no optionals or positionals are available, usage is just prog
         elif usage is None and not actions:
-            usage = '%(prog)s' % dict(prog=self._prog)
+            usage = "%(prog)s" % dict(prog=self._prog)
 
         # if optionals and positionals are available, calculate usage
         elif usage is None:
-            prog = '%(prog)s' % dict(prog=self._prog)
+            prog = "%(prog)s" % dict(prog=self._prog)
 
             # split optionals from positionals
             optionals = []
@@ -114,12 +108,12 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
             ]
             required_actions = sorted(
                 [action for action in actions if action.required],
-                key=attrgetter('option_strings'))
+                key=attrgetter("option_strings"))
             optional_actions = sorted([
                 action for action in actions
                 if not action.required and action.dest != "help"
             ],
-                                      key=attrgetter('option_strings'))
+                                      key=attrgetter("option_strings"))
 
             # combine actions back
             actions = help_action + required_actions + optional_actions
@@ -134,22 +128,22 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
             # build full usage string
             format = self._format_actions_usage
             action_usage = format(optionals + positionals, groups)
-            usage = ' '.join([s for s in [prog, action_usage] if s])
+            usage = " ".join([s for s in [prog, action_usage] if s])
 
             # wrap the usage parts if it's too long
             text_width = self._width - self._current_indent
             if len(prefix) + len(usage) > text_width:
 
                 # break usage into wrappable parts
-                part_regexp = (r'\(.*?\)+(?=\s|$)|'
-                               r'\[.*?\]+(?=\s|$)|'
-                               r'\S+')
+                part_regexp = (r"\(.*?\)+(?=\s|$)|"
+                               r"\[.*?\]+(?=\s|$)|"
+                               r"\S+")
                 opt_usage = format(optionals, groups)
                 pos_usage = format(positionals, groups)
                 opt_parts = re.findall(part_regexp, opt_usage)
                 pos_parts = re.findall(part_regexp, pos_usage)
-                assert ' '.join(opt_parts) == opt_usage
-                assert ' '.join(pos_parts) == pos_usage
+                assert " ".join(opt_parts) == opt_usage
+                assert " ".join(pos_parts) == pos_usage
 
                 # helper for wrapping lines
                 def get_lines(parts, indent, prefix=None):
@@ -161,20 +155,20 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
                         line_len = len(indent) - 1
                     for part in parts:
                         if line_len + 1 + len(part) > text_width and line:
-                            lines.append(indent + ' '.join(line))
+                            lines.append(indent + " ".join(line))
                             line = []
                             line_len = len(indent) - 1
                         line.append(part)
                         line_len += len(part) + 1
                     if line:
-                        lines.append(indent + ' '.join(line))
+                        lines.append(indent + " ".join(line))
                     if prefix is not None:
                         lines[0] = lines[0][len(indent):]
                     return lines
 
                 # if prog is short, follow it with optionals or positionals
                 if len(prefix) + len(prog) <= 0.75 * text_width:
-                    indent = ' ' * (len(prefix) + len(prog) + 1)
+                    indent = " " * (len(prefix) + len(prog) + 1)
                     if opt_parts:
                         lines = get_lines([prog] + opt_parts, indent, prefix)
                         lines.extend(get_lines(pos_parts, indent))
@@ -185,7 +179,7 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
 
                 # if prog is long, put it on its own line
                 else:
-                    indent = ' ' * len(prefix)
+                    indent = " " * len(prefix)
                     parts = opt_parts + pos_parts
                     lines = get_lines(parts, indent)
                     if len(lines) > 1:
@@ -195,10 +189,10 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
                     lines = [prog] + lines
 
                 # join lines into usage
-                usage = '\n'.join(lines)
+                usage = "\n".join(lines)
 
         # prefix with 'usage:'
-        return '%s%s\n\n' % (prefix, usage)
+        return "%s%s\n\n" % (prefix, usage)
 
 
 class Metavar_Circum_Symbols(argparse.HelpFormatter):
@@ -252,19 +246,19 @@ class Metavar_Indenter(argparse.HelpFormatter):
 
         # no help; start on same line and add a final newline
         if not action.help:
-            tup = self._current_indent, '', action_header
-            action_header = '%*s%s\n' % tup
+            tup = self._current_indent, "", action_header
+            action_header = "%*s%s\n" % tup
 
         # short action name; start on the same line and pad two spaces
         elif len(action_header) <= action_width:
-            tup = self._current_indent, '', action_width, action_header  # type: ignore
-            action_header = '%*s%-*s  ' % tup  # type: ignore
+            tup = self._current_indent, "", action_width, action_header  # type: ignore
+            action_header = "%*s%-*s  " % tup  # type: ignore
             indent_first = 0
 
         # long action name; start on the next line
         else:
-            tup = self._current_indent, '', action_header
-            action_header = '%*s%s\n' % tup
+            tup = self._current_indent, "", action_header
+            action_header = "%*s%s\n" % tup
             indent_first = help_position
 
         # collect the pieces of the action help
@@ -277,19 +271,19 @@ class Metavar_Indenter(argparse.HelpFormatter):
             if action.nargs != 0 and action.type is not None:
                 default = self._get_default_metavar_for_optional(action)
                 args_string = self._format_args(action, default)
-                parts.append('%*s%s\n' % (indent_first, '', args_string))
+                parts.append("%*s%s\n" % (indent_first, "", args_string))
             elif action.type is None:
                 args_string = "<flag>"
-                parts.append('%*s%s\n' % (indent_first, '', args_string))
+                parts.append("%*s%s\n" % (indent_first, "", args_string))
             else:
-                parts.append('%*s%s\n' % (indent_first, '', help_lines[0]))
+                parts.append("%*s%s\n" % (indent_first, "", help_lines[0]))
                 help_lines.pop(0)
             for line in help_lines:
-                parts.append('%*s%s\n' % (help_position, '', line))
+                parts.append("%*s%s\n" % (help_position, "", line))
 
         # or add a newline if the description doesn't end with one
-        elif not action_header.endswith('\n'):
-            parts.append('\n')
+        elif not action_header.endswith("\n"):
+            parts.append("\n")
 
         # if there are any sub-actions, add their help as well
         for subaction in self._iter_indented_subactions(action):
@@ -309,7 +303,7 @@ class Metavar_Indenter(argparse.HelpFormatter):
         else:
             parts = []  # type: ignore
             parts.extend(action.option_strings)
-            return ', '.join(parts)
+            return ", ".join(parts)
 
 
 class ArgparseFormatter(argparse.ArgumentDefaultsHelpFormatter,
