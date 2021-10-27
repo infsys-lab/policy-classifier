@@ -21,7 +21,7 @@ import os
 import re
 
 # define global dill setting
-dill.settings['recurse'] = True
+dill.settings["recurse"] = True
 
 
 def preprocess(document: str) -> str:
