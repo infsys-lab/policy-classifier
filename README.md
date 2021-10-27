@@ -30,7 +30,7 @@ $ pip install -r requirements.txt
 
 ```
 usage: train.py [-h] [--cv-splits <int>] [--debug]
-                [--logging-level {debug,info,warning,error,critical}]
+                [--logging-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                 [--n-jobs <int>] [--policies-csv <file_path>]
                 [--precision-threshold <float>] [--random-seed <int>]
                 [--scoring <str>]
@@ -40,8 +40,8 @@ optional arguments:
                          number of cross-validation splits (default: 5)
   --debug                <flag>
                          flag to debug script (default: False)
-  --logging-level        {debug,info,warning,error,critical}
-                         set logging level (default: info)
+  --logging-level        {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+                         set logging level (default: INFO)
   --n-jobs               <int>
                          number of parallel jobs, specify -1 to use all processors
                          (default: 1)

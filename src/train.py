@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
 import argparse
+import logging
 import gzip
 import ipdb
 import json
@@ -22,6 +23,9 @@ import re
 
 # define global dill setting
 dill.settings["recurse"] = True
+
+# define module's logger
+LOGGER = logging.getLogger(__name__)
 
 
 def preprocess(document: str) -> str:
@@ -42,7 +46,8 @@ def main(args: argparse.Namespace) -> None:
 
     # update logger
     global LOGGER
-    add_file_handler(LOGGER, os.path.join(run_dir, "session.log"))
+    LOGGER = add_file_handler(LOGGER, args.logging_level,
+                              os.path.join(run_dir, "session.log"))
 
     # log and dump args file
     args_file = os.path.join(run_dir, "args.json")
@@ -179,11 +184,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--logging-level",
         type=str,
-        choices=["debug", "info", "warning", "error", "critical"],
-        default="info",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="INFO",
         help="set logging level")
     parser.add_argument("--debug",
                         action="store_true",
                         help="flag to debug script")
-    LOGGER = get_formatted_logger(parser.parse_known_args()[0].logging_level)
+    LOGGER = get_formatted_logger(LOGGER,
+                                  parser.parse_known_args()[0].logging_level)
     main(parser.parse_args())
