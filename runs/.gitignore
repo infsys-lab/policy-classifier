@@ -1,4 +1,3 @@
 *.log
 *.json
 *.dill.gz
-!run_1634285445/*
