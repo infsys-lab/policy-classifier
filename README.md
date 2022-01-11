@@ -4,11 +4,13 @@ This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Rando
 
 ## Dependencies :mag:
 
-This repository's code was tested with Python version `3.8.12`. To sync dependencies, we recommend creating a virtual environment and installing the relevant packages via `pip`:
+1. This repository's code was tested with Python version `3.8.12`. To sync dependencies, we recommend creating a virtual environment and installing the relevant packages via `pip`:
 
-```
-$ pip install -r requirements.txt
-```
+    ```
+    $ pip install -r requirements.txt
+    ```
+
+2. **Optional:** To access pre-computed data, this repository requires a working installation of Git [`LFS`](https://git-lfs.github.com/). We utilized version `v3.0.1` in our implementation.
 
 ## Initialization :fire:
 
@@ -16,6 +18,12 @@ $ pip install -r requirements.txt
 
     ```
     $ bash scripts/prepare_data.sh
+    ```
+
+2. **Optional:** To clone the `policy-classifier-data` submodule containing a pre-computed final model (Git LFS object), simply execute:
+
+    ```
+    $ git submodule update --init --recursive
     ```
 
 3. **Optional:** Initialize git hooks to manage development workflows such as linting shell scripts and keeping python dependencies up-to-date:
@@ -64,9 +72,7 @@ In order to train, cross-validate and evaluate the model, simply execute:
 $ python3 src/train.py
 ```
 
-This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill.gz` compressed pickle. The dumped model checkpoint is a pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
-
-**Note:** This repository comes shipped with a ready-to-use model run in `./runs/run_1634294167`. Below we provide instructions on how to import and utilize the best model for downstream predictions.
+This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill` pickle. The dumped model checkpoint is a `sklearn` pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
 
 ### Import
 
@@ -74,15 +80,11 @@ In order to use a dumped model for downstream tasks, it is necessary to set up a
 
 ```python
 # load necessary dependencies
-from gzip import decompress
-from dill import loads
+from dill import load
 
 # load the raw compressed model as bytes
-with open("path/to/model.dill.gz", "rb") as input_file_stream:
-    model = input_file_stream.read()
-
-# decompress and unpickle
-model = loads(decompress(model))
+with open("path/to/model.dill", "rb") as input_file_stream:
+    model = dill.load(input_file_stream)
 
 # predict and provide probabilities for text being a privacy policy
 model.predict_proba(["some markdown text", "some policy text"])[:,1]
