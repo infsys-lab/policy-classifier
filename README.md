@@ -84,7 +84,7 @@ from dill import load
 
 # load the raw compressed model as bytes
 with open("path/to/model.dill", "rb") as input_file_stream:
-    model = dill.load(input_file_stream)
+    model = load(input_file_stream)
 
 # predict and provide probabilities for text being a privacy policy
 model.predict_proba(["some markdown text", "some policy text"])[:,1]
