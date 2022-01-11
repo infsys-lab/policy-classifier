@@ -23,7 +23,7 @@ This repository documents a [Random Forests](https://en.wikipedia.org/wiki/Rando
 2. **Optional:** To clone the `policy-classifier-data` submodule containing a pre-computed final model (Git LFS object), simply execute:
 
     ```
-    $ git submodule update --init --recursive
+    $ bash scripts/prepare_submodules.sh
     ```
 
 3. **Optional:** Initialize git hooks to manage development workflows such as linting shell scripts and keeping python dependencies up-to-date:
