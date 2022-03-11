@@ -40,7 +40,7 @@ def add_stream_handler(logger: logging.Logger, level: str) -> None:
     # set logger level
     logger.setLevel(level)
 
-    # set output stream to stdout
+    # set output stream to stderr
     stderr_handler = logging.StreamHandler()
     stderr_handler.setLevel(logging.DEBUG)
     stderr_handler.setFormatter(FORMATTER)
