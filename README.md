@@ -100,3 +100,24 @@ To run a `mypy` type-integrity test, execute:
 ```
 $ mypy
 ```
+
+## Citation :book:
+
+If you found this repository helpful, we kindly ask you to cite our publication titled [Privacy and Customer’s Education: NLP for Information Resources Suggestions and Expert Finder Systems](https://link.springer.com/chapter/10.1007/978-3-031-05563-8_5): 
+
+```bibtex
+@InProceedings{10.1007/978-3-031-05563-8_5,
+  author =       "Mazzola, Luca and Waldis, Andreas and Shankar, Atreya and
+                  Argyris, Diamantis and Denzler, Alexander and Van Roey,
+                  Michiel",
+  editor =       "Moallem, Abbas",
+  title =        "Privacy and Customer's Education: NLP for Information
+                  Resources Suggestions and Expert Finder Systems",
+  booktitle =    "HCI for Cybersecurity, Privacy and Trust",
+  year =         "2022",
+  publisher =    "Springer International Publishing",
+  address =      "Cham",
+  pages =        "62--77",
+  isbn =         "978-3-031-05563-8"
+}
+```
