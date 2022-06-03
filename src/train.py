@@ -36,6 +36,10 @@ def preprocess(document: str) -> str:
     return document.lower()
 
 
+def get_closest_value_index(vector: np.ndarray, value: float) -> int:
+    return np.argmin(np.abs(vector - value)).item()
+
+
 def main(args: argparse.Namespace) -> None:
     # create run_dir
     run_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "runs",
@@ -118,7 +122,7 @@ def main(args: argparse.Namespace) -> None:
         y_test, y_probs_test)
 
     # find the nearest precision to specified precision threshold
-    index = np.argmin(np.abs(precision - args.precision_threshold))
+    index = get_closest_value_index(precision, args.precision_threshold)
     precision = precision[index]
     recall = recall[index]
     threshold = thresholds[index]
