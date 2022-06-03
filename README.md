@@ -34,7 +34,7 @@ This repository aims to reproduce a [Random Forests](https://en.wikipedia.org/wi
 
 ## Usage :snowflake:
 
-### Train
+<details><summary>Train</summary><p>
 
 ```
 usage: train.py [-h] [--cv-splits <int>] [--debug]
@@ -74,7 +74,8 @@ $ python3 src/train.py
 
 This workflow will create a run directory in `./runs` and will dump all necessary logs, metrics and the final model checkpoint as a `dill` pickle. The dumped model checkpoint is a `sklearn` pipeline containing the `TfidfVectorizer` and `RandomForestClassifier` classes.
 
-### Predict
+</p></details>
+<details><summary>Predict</summary><p>
 
 In order to use a dumped model for downstream tasks, it is necessary to set up a virtual environment with the same Python and Scikit-Learn versions as this repository. Not doing so could result in unforeseen errors during the unpickling phase. Below is a code-snippet documenting how to import and use the best saved model for prediction:
 
@@ -89,6 +90,8 @@ with open("path/to/model.dill", "rb") as input_file_stream:
 # predict and provide probabilities for text being a privacy policy
 model.predict_proba(["some markdown text", "some policy text"])[:,1]
 ```
+
+</p></details>
 
 ## Test :microscope:
 
