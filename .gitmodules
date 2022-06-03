@@ -1,4 +1,4 @@
 [submodule "submodules/policy-classifier-data"]
   path = submodules/policy-classifier-data
-  url = https://gitlab.enterpriselab.ch/ashankar/policy-classifier-data.git
+  url = https://gitlab.enterpriselab.ch/infsys-lab/policy-classifier-data.git
   branch = main
