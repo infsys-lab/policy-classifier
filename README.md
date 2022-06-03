@@ -95,11 +95,17 @@ model.predict_proba(["some markdown text", "some policy text"])[:,1]
 
 ## Test :microscope:
 
-To run a `mypy` type-integrity test, execute:
+1. To run unit tests, execute:
 
-```
-$ mypy
-```
+    ```
+    $ pytest
+    ```
+
+2. To run a `mypy` type-integrity test, execute:
+
+    ```
+    $ mypy
+    ```
 
 ## Citation :book:
 
