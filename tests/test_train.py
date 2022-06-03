@@ -14,6 +14,7 @@ def test_preprocess():
     assert preprocess("my email is person @ example dot com"
                       ) == "my email is person at example dot com"
     assert preprocess("what a\nnice day") == "what a nice day"
+    assert preprocess("WHAT A NICE DAY") == "what a nice day"
 
 
 def test_get_closest_value_index():
