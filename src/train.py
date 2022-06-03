@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from typing import Dict, Any
-from utils import (  # type: ignore
-    ArgparseFormatter, file_path, add_stream_handler, timestamp,
-    add_file_handler)
+from utils import (ArgparseFormatter, file_path, add_stream_handler, timestamp,
+                   add_file_handler)
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.ensemble import RandomForestClassifier
