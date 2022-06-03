@@ -187,5 +187,6 @@ if __name__ == "__main__":
     parser.add_argument("--debug",
                         action="store_true",
                         help="flag to debug script")
+    LOGGER = logging.getLogger()
     add_stream_handler(LOGGER, parser.parse_known_args()[0].logging_level)
     main(parser.parse_args())
