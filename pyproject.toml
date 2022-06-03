@@ -14,10 +14,15 @@ dill = "^0.3.4"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
+pytest = "^7.1.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]
 
 [tool.mypy]
 allow_redefinition = true
