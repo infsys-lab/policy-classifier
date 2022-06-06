@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Dict, Any
+from typing import Dict, Any, Tuple, List
 from utils import (ArgparseFormatter, file_path, add_stream_handler, timestamp,
                    add_file_handler)
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -26,6 +26,24 @@ dill.settings["recurse"] = True
 LOGGER = logging.getLogger(__name__)
 
 
+def get_run_dir() -> str:
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), "runs",
+                        "run_" + timestamp())
+
+
+def dump_args(args: argparse.Namespace, run_dir: str) -> None:
+    args_file = os.path.join(run_dir, "args.json")
+    LOGGER.info(args)
+    LOGGER.info("Dumping arguments to disk: %s" % args_file)
+    with open(args_file, "w") as output_file_stream:
+        json.dump(vars(args), output_file_stream)
+
+
+def get_raw_data(args: argparse.Namespace) -> Tuple[List[str], List[int]]:
+    df = pd.read_csv(args.policies_csv)
+    return df["policy_text"].tolist(), df["is_policy"].apply(int).tolist()
+
+
 def preprocess(document: str) -> str:
     document = re.sub(r"http\S+", "", document)
     document = re.sub(r"http", "", document)
@@ -36,48 +54,8 @@ def preprocess(document: str) -> str:
     return document.lower()
 
 
-def get_closest_value_index(vector: np.ndarray, value: float) -> int:
-    return np.argmin(np.abs(vector - value)).item()
-
-
-def main(args: argparse.Namespace) -> None:
-    # create run_dir
-    run_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "runs",
-                           "run_" + timestamp())
-    os.makedirs(run_dir, exist_ok=True)
-
-    # update logger
-    global LOGGER
-    add_file_handler(LOGGER, args.logging_level,
-                     os.path.join(run_dir, "session.log"))
-
-    # log and dump args file
-    args_file = os.path.join(run_dir, "args.json")
-    LOGGER.info(args)
-    LOGGER.info("Dumping arguments to disk: %s" % args_file)
-    with open(args_file, "w") as output_file_stream:
-        json.dump(vars(args), output_file_stream)
-
-    # read in csv data and standardize
-    df = pd.read_csv(args.policies_csv)
-
-    # define inputs and outputs
-    X = df["policy_text"].tolist()
-    y = df["is_policy"].apply(int).tolist()
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.1, random_state=args.random_seed)
-
-    # define pipeline for classifier
-    policy_clf = Pipeline([
-        ("vect", TfidfVectorizer(stop_words="english",
-                                 preprocessor=preprocess)),
-        ("clf",
-         RandomForestClassifier(class_weight="balanced",
-                                random_state=args.random_seed)),
-    ])
-    LOGGER.info("Base classifier: %s" % policy_clf)
-
+def get_grid_search_hyperparameters(
+        args: argparse.Namespace) -> Dict[Any, Any]:
     if args.debug:
         parameters = {"vect__ngram_range": [(1, 2)]}
         args.cv_splits = 2
@@ -92,21 +70,14 @@ def main(args: argparse.Namespace) -> None:
             "clf__min_samples_leaf": (2, 3)
         }
         LOGGER.info("Grid-search parameters %s" % parameters)
+    return parameters
 
-    # define grid-search model wrapper
-    gs_policy_clf = GridSearchCV(policy_clf,
-                                 parameters,
-                                 scoring=args.scoring,
-                                 cv=args.cv_splits,
-                                 n_jobs=args.n_jobs,
-                                 verbose=4)
 
-    # fit on data
-    gs_policy_clf.fit(X_train, y_train)
-    LOGGER.info("Cross-validation with grid-search complete")
-    LOGGER.info("Best model: %s" % gs_policy_clf.best_estimator_)
+def get_closest_value_index(vector: np.ndarray, value: float) -> int:
+    return np.argmin(np.abs(vector - value)).item()
 
-    # log and dump CV metrics
+
+def dump_cv_metrics(run_dir: str, gs_policy_clf: GridSearchCV) -> None:
     cv_metrics_file = os.path.join(run_dir, "cv_metrics.json")
     LOGGER.info("Dumping CV metrics to disk: %s" % cv_metrics_file)
     with open(cv_metrics_file, "w") as output_file_stream:
@@ -116,21 +87,9 @@ def main(args: argparse.Namespace) -> None:
                 for key, value in gs_policy_clf.cv_results_.items()
             }, output_file_stream)
 
-    # get test set probabilities
-    y_probs_test = gs_policy_clf.best_estimator_.predict_proba(X_test)[:, 1]
-    precision, recall, thresholds = precision_recall_curve(
-        y_test, y_probs_test)
 
-    # find the nearest precision to specified precision threshold
-    index = get_closest_value_index(precision, args.precision_threshold)
-    precision = precision[index]
-    recall = recall[index]
-    threshold = thresholds[index]
-    LOGGER.info("Optimization condition satisfied")
-    LOGGER.info("Precision: %s | Recall: %s | Threshold: %s" %
-                (precision, recall, threshold))
-
-    # log and dump PR metrics
+def dump_threshold_metrics(run_dir: str, threshold: float, precision: float,
+                           recall: float) -> None:
     threshold_metrics_file = os.path.join(run_dir, "threshold_metrics.json")
     LOGGER.info("Dumping threshold metrics to disk: %s" %
                 threshold_metrics_file)
@@ -142,15 +101,89 @@ def main(args: argparse.Namespace) -> None:
                 "recall": recall
             }, output_file_stream)
 
-    # refit final model
-    LOGGER.info("Refitting final model on all data available")
-    final_model = gs_policy_clf.best_estimator_.fit(X, y)
-    final_model_file = os.path.join(run_dir, "final_model.dill")
 
-    # dump model
+def dump_model(run_dir: str, final_model: Pipeline):
+    final_model_file = os.path.join(run_dir, "final_model.dill")
     LOGGER.info("Dumping final model to disk: %s" % final_model_file)
     with open(final_model_file, "wb") as output_file_stream:
         dill.dump(final_model, output_file_stream)
+
+
+def main(args: argparse.Namespace) -> None:
+    # create run_dir
+    run_dir = get_run_dir()
+    os.makedirs(run_dir, exist_ok=True)
+
+    # update logger
+    global LOGGER
+    add_file_handler(LOGGER, args.logging_level,
+                     os.path.join(run_dir, "session.log"))
+
+    # log and dump args file
+    dump_args(args, run_dir)
+
+    # parse raw data
+    X, y = get_raw_data(args)
+
+    # split raw data into train and test sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.1, random_state=args.random_seed)
+
+    # initialize policy classifier (pipeline)
+    policy_clf = Pipeline([
+        ("vect", TfidfVectorizer(stop_words="english",
+                                 preprocessor=preprocess)),
+        ("clf",
+         RandomForestClassifier(class_weight="balanced",
+                                random_state=args.random_seed)),
+    ])
+    LOGGER.info("Base classifier: %s" % policy_clf)
+
+    # retrieve grid-search parameter space
+    parameters = get_grid_search_hyperparameters(args)
+
+    # define grid-search model wrapper
+    gs_policy_clf = GridSearchCV(policy_clf,
+                                 parameters,
+                                 scoring=args.scoring,
+                                 cv=args.cv_splits,
+                                 n_jobs=args.n_jobs,
+                                 verbose=4)
+
+    # fit on data and log current state
+    gs_policy_clf.fit(X_train, y_train)
+    LOGGER.info("Cross-validation with grid-search complete")
+    LOGGER.info("Best model: %s" % gs_policy_clf.best_estimator_)
+
+    # get test set probabilities
+    y_probs_test = gs_policy_clf.best_estimator_.predict_proba(X_test)[:, 1]
+
+    # compute precision-recall data based on probabilities
+    precision, recall, thresholds = precision_recall_curve(
+        y_test, y_probs_test)
+
+    # find the nearest precision to specified precision threshold
+    index = get_closest_value_index(precision, args.precision_threshold)
+
+    # get precision, recall and threshold that are closest to desired
+    precision, recall, threshold = precision[index], recall[index], thresholds[
+        index]
+    LOGGER.info("Optimization condition satisfied")
+    LOGGER.info("Precision: %s | Recall: %s | Threshold: %s" %
+                (precision, recall, threshold))
+
+    # log and dump CV metrics
+    dump_cv_metrics(run_dir, gs_policy_clf)
+
+    # log and dump PR metrics
+    dump_threshold_metrics(run_dir, threshold, precision, recall)
+
+    # refit final model
+    LOGGER.info("Refitting final model on all data available")
+    final_model = gs_policy_clf.best_estimator_.fit(X, y)
+
+    # dump model
+    dump_model(run_dir, final_model)
 
 
 if __name__ == "__main__":
