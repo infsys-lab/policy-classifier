@@ -19,8 +19,7 @@ NOUNS = ["puppy", "car", "rabbit", "girl", "monkey"]
 VERBS = ["runs", "hits", "jumps", "drives", "barfs"]
 ADV = ["crazily.", "dutifully.", "foolishly.", "merrily.", "occasionally."]
 ADJ = ["adorable", "clueless", "dirty", "odd", "stupid"]
-SYMBOLS = ["@", "$", "."
-           "%", "&"]
+SYMBOLS = ["@", "$", ".", "%", "&"]
 POSSIBILITIES = [NOUNS, SYMBOLS, VERBS, ADJ, ADV]
 
 
