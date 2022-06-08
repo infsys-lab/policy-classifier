@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from typing import Dict, Any, Tuple, List
-from utils import (ArgparseFormatter, file_path, add_stream_handler, timestamp,
-                   add_file_handler)
+from parser import get_train_parser
+from utils import add_stream_handler, timestamp, add_file_handler
+from sklearn.metrics import precision_recall_curve, classification_report
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_recall_curve
 from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
@@ -77,29 +77,11 @@ def get_closest_value_index(vector: np.ndarray, value: float) -> int:
     return np.argmin(np.abs(vector - value)).item()
 
 
-def dump_cv_metrics(run_dir: str, gs_policy_clf: GridSearchCV) -> None:
-    cv_metrics_file = os.path.join(run_dir, "cv_metrics.json")
-    LOGGER.info("Dumping CV metrics to disk: %s" % cv_metrics_file)
-    with open(cv_metrics_file, "w") as output_file_stream:
-        json.dump(
-            {
-                key: value.tolist() if isinstance(value, np.ndarray) else value
-                for key, value in gs_policy_clf.cv_results_.items()
-            }, output_file_stream)
-
-
-def dump_threshold_metrics(run_dir: str, threshold: float, precision: float,
-                           recall: float) -> None:
-    threshold_metrics_file = os.path.join(run_dir, "threshold_metrics.json")
-    LOGGER.info("Dumping threshold metrics to disk: %s" %
-                threshold_metrics_file)
-    with open(threshold_metrics_file, "w") as output_file_stream:
-        json.dump(
-            {
-                "threshold": threshold,
-                "precision": precision,
-                "recall": recall
-            }, output_file_stream)
+def dump_metrics(run_dir: str, metrics: Dict) -> None:
+    metrics_file = os.path.join(run_dir, "metrics.json")
+    LOGGER.info("Dumping metrics to disk: %s" % metrics_file)
+    with open(metrics_file, "w") as output_file_stream:
+        json.dump(metrics, output_file_stream)
 
 
 def dump_model(run_dir: str, final_model: Pipeline):
@@ -162,8 +144,14 @@ def main(args: argparse.Namespace) -> None:
     precision, recall, thresholds = precision_recall_curve(
         y_test, y_probs_test)
 
+    clf_report = classification_report(y_test,
+                                       (y_probs_test >= 0.5).astype(int),
+                                       output_dict=True)
+
     # find the nearest precision to specified precision threshold
-    index = get_closest_value_index(precision, args.precision_threshold)
+    # NOTE: last elements of precisiona and recall are constants for graphs
+    # NOTE: we do not need to consider them and can exclude them as below
+    index = get_closest_value_index(precision[:-1], args.precision_threshold)
 
     # get precision, recall and threshold that are closest to desired
     precision, recall, threshold = precision[index], recall[index], thresholds[
@@ -172,11 +160,22 @@ def main(args: argparse.Namespace) -> None:
     LOGGER.info("Precision: %s | Recall: %s | Threshold: %s" %
                 (precision, recall, threshold))
 
-    # log and dump CV metrics
-    dump_cv_metrics(run_dir, gs_policy_clf)
+    # compile all metrics together here
+    metrics = {
+        "cv_metrics": {
+            key: value.tolist() if isinstance(value, np.ndarray) else value
+            for key, value in gs_policy_clf.cv_results_.items()
+        },
+        "clf_report": clf_report,
+        "threshold_metrics": {
+            "threshold": threshold,
+            "precision": precision,
+            "recall": recall
+        }
+    }
 
-    # log and dump PR metrics
-    dump_threshold_metrics(run_dir, threshold, precision, recall)
+    # log and dump all metrics
+    dump_metrics(run_dir, metrics)
 
     # refit final model
     LOGGER.info("Refitting final model on all data available")
@@ -187,43 +186,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(formatter_class=ArgparseFormatter)
-    parser.add_argument("--policies-csv",
-                        type=file_path,
-                        default=os.path.join(
-                            os.path.dirname(os.path.dirname(__file__)),
-                            "data/1301_dataset.csv"),
-                        help="path to gold policies csv file")
-    parser.add_argument("--scoring",
-                        type=str,
-                        default="roc_auc",
-                        help="scoring metric for GridSearchCV")
-    parser.add_argument("--random-seed",
-                        type=int,
-                        default=42,
-                        help="global random seed for RNGs")
-    parser.add_argument("--cv-splits",
-                        type=int,
-                        default=5,
-                        help="number of cross-validation splits")
-    parser.add_argument(
-        "--n-jobs",
-        type=int,
-        default=1,
-        help="number of parallel jobs, specify -1 to use all processors")
-    parser.add_argument("--precision-threshold",
-                        type=float,
-                        default=0.99,
-                        help="precision threshold to match")
-    parser.add_argument(
-        "--logging-level",
-        type=str,
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default="INFO",
-        help="set logging level")
-    parser.add_argument("--debug",
-                        action="store_true",
-                        help="flag to debug script")
+    parser = get_train_parser()
     LOGGER = logging.getLogger()
     add_stream_handler(LOGGER, parser.parse_known_args()[0].logging_level)
     main(parser.parse_args())
