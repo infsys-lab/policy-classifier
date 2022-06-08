@@ -1,6 +1,8 @@
 # policy-classifier
 
-This repository aims to reproduce a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier which was originally described in the [Princeton-Leuven Longitudinal Corpus of Privacy Policies](https://privacypolicies.cs.princeton.edu) paper. We train our classifier on TF-IDF text features from annotated privacy-policy documents released alongside the aforementioned publication. Our classifier expects input text to be in `markdown` format and has its own pre-processing pipeline. 
+This repository aims to reproduce a [Random Forests](https://en.wikipedia.org/wiki/Random_forest) privacy-policy classifier which was originally described in the [Princeton-Leuven Longitudinal Corpus of Privacy Policies](https://privacypolicies.cs.princeton.edu) paper. We train our classifier on TF-IDF text features from annotated privacy-policy markdown documents released alongside the aforementioned publication.
+
+Our classifier was trained on a randomly split training set using 5-fold cross validation. It achieved a mean test ROC-AUC score of `0.955` during cross-validation. We then conducted post-hoc threshold tuning on a holdout set and found that a threshold of `0.752` was required to reach a precision of `0.99` for the privacy-policy or positive label. Finally after theshold tuning, we trained our classifier with the best performing hyperparameters on all training data to produce a production-ready model.
 
 ## Dependencies :mag:
 
@@ -95,7 +97,7 @@ model.predict_proba(["some markdown text", "some policy text"])[:,1]
 
 ## Test :microscope:
 
-1. To run unit tests, execute:
+1. To run unit and integration tests, execute:
 
     ```
     $ pytest
