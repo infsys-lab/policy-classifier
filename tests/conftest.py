@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
 import random
 import pytest
 
@@ -30,3 +31,7 @@ class RandomSequenceBinaryData:
 @pytest.fixture
 def get_dummy_data():
     return RandomSequenceBinaryData
+
+
+def pytest_configure():
+    logging.disable(logging.CRITICAL)
