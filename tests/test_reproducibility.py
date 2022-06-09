@@ -11,7 +11,7 @@ import os
 
 @pytest.mark.integration
 @pytest.mark.parametrize("seed", [0, 1, 2, 3, 4, 5])
-def test_main(seed, get_dummy_data, monkeypatch, tmpdir):
+def test_reproducibility(seed, get_dummy_data, monkeypatch, tmpdir):
 
     def mock_get_first_run_dir(*args, **kwargs):
         return os.path.join(tmpdir, "run_1")
