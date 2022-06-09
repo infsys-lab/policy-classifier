@@ -22,9 +22,13 @@ def test_reproducibility(seed, get_dummy_data, monkeypatch, tmpdir):
     def mock_get_raw_data(*args, **kwargs):
         return attrgetter("X", "y")(get_dummy_data(seed=seed))
 
+    def mock_add_file_handler(*args, **kwargs):
+        return None
+
     monkeypatch.setattr("ipdb.set_trace", lambda: None)
     monkeypatch.setattr("src.train.get_run_dir", mock_get_first_run_dir)
     monkeypatch.setattr("src.train.get_raw_data", mock_get_raw_data)
+    monkeypatch.setattr("src.train.add_file_handler", mock_add_file_handler)
     parser = get_train_parser()
     args = parser.parse_args(["--debug"])
     main(args)
