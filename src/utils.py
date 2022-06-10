@@ -262,12 +262,9 @@ class Metavar_Indenter(argparse.HelpFormatter):
         if action.help:
             help_text = self._expand_help(action)
             help_lines = self._split_lines(help_text, help_width)
-            if action.nargs != 0 and action.type is not None:
+            if action.nargs != 0:
                 default = self._get_default_metavar_for_optional(action)
                 args_string = self._format_args(action, default)
-                parts.append("%*s%s\n" % (indent_first, "", args_string))
-            elif action.type is None:
-                args_string = "<flag>"
                 parts.append("%*s%s\n" % (indent_first, "", args_string))
             else:
                 parts.append("%*s%s\n" % (indent_first, "", help_lines[0]))
