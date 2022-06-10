@@ -9,8 +9,7 @@ usage: prepare_submodules.sh [-h|--help]
 This script clones the 'policy-classifier-data' repository
 
 optional arguments:
-  -h, --help  <flag>
-              show this help message and exit
+  -h, --help  show this help message and exit
 EOF
 }
 

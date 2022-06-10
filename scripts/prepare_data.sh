@@ -10,8 +10,7 @@ This script downloads and unzips necessary data to
 train the privacy policy classifier
 
 optional arguments:
-  -h, --help  <flag>
-              show this help message and exit
+  -h, --help  show this help message and exit
 EOF
 }
 

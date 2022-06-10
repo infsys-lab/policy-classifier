@@ -48,8 +48,7 @@ usage: train.py [-h] [--cv-splits <int>] [--debug]
 optional arguments:
   --cv-splits            <int>
                          number of cross-validation splits (default: 5)
-  --debug                <flag>
-                         flag to debug script (default: False)
+  --debug                flag to debug script (default: False)
   --logging-level        {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                          set logging level (default: INFO)
   --n-jobs               <int>
@@ -64,8 +63,7 @@ optional arguments:
                          global random seed for RNGs (default: 42)
   --scoring              <str>
                          scoring metric for GridSearchCV (default: roc_auc)
-  -h, --help             <flag>
-                         show this help message and exit
+  -h, --help             show this help message and exit
 ```
 
 In order to train, cross-validate and evaluate the model, simply execute:
