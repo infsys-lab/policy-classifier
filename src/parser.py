@@ -10,9 +10,9 @@ def get_train_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(formatter_class=ArgparseFormatter)
     parser.add_argument("--policies-csv",
                         type=file_path,
-                        default=os.path.join(
+                        default=os.path.relpath(os.path.join(
                             os.path.dirname(os.path.dirname(__file__)),
-                            "data/1301_dataset.csv"),
+                            "data/1301_dataset.csv")),
                         help="path to gold policies csv file")
     parser.add_argument("--scoring",
                         type=str,
