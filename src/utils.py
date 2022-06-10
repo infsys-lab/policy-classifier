@@ -244,7 +244,8 @@ class Metavar_Indenter(argparse.HelpFormatter):
 
         # short action name; start on the same line and pad two spaces
         elif len(action_header) <= action_width:
-            tup = self._current_indent, "", action_width, action_header  # type: ignore
+            tup = (self._current_indent, "", action_width, action_header
+                   )  # type: ignore
             action_header = "%*s%-*s  " % tup  # type: ignore
             indent_first = 0
 
