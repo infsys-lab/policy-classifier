@@ -196,6 +196,7 @@ class Metavar_Circum_Symbols(argparse.HelpFormatter):
     Only the name of this class is considered a public API. All the methods
     provided by the class are considered an implementation detail.
     """
+
     def _get_default_metavar_for_optional(self,
                                           action: argparse.Action) -> str:
         """
@@ -226,6 +227,7 @@ class Metavar_Indenter(argparse.HelpFormatter):
     Only the name of this class is considered a public API. All the methods
     provided by the class are considered an implementation detail.
     """
+
     def _format_action(self, action: argparse.Action) -> str:
         """
         Function to define how actions are printed in help message
@@ -262,7 +264,7 @@ class Metavar_Indenter(argparse.HelpFormatter):
         if action.help:
             help_text = self._expand_help(action)
             help_lines = self._split_lines(help_text, help_width)
-            if action.nargs != 0:
+            if action.nargs != 0 and action.type is not None:
                 default = self._get_default_metavar_for_optional(action)
                 args_string = self._format_args(action, default)
                 parts.append("%*s%s\n" % (indent_first, "", args_string))
