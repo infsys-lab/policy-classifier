@@ -84,7 +84,7 @@ def dump_metrics(run_dir: str, metrics: Dict) -> None:
         json.dump(metrics, output_file_stream)
 
 
-def dump_model(run_dir: str, final_model: Pipeline):
+def dump_model(run_dir: str, final_model: Pipeline) -> None:
     final_model_file = os.path.join(run_dir, "final_model.dill")
     LOGGER.info("Dumping final model to disk: %s" % final_model_file)
     with open(final_model_file, "wb") as output_file_stream:
