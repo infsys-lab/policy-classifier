@@ -83,7 +83,7 @@ In order to use a dumped model for downstream tasks, it is necessary to set up a
 # load necessary dependencies
 from dill import load
 
-# load the raw compressed model as bytes
+# load the model as stream of bytes
 with open("path/to/model.dill", "rb") as input_file_stream:
     model = load(input_file_stream)
 
