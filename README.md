@@ -6,13 +6,11 @@ Our classifier was trained on a randomly split training set using a hyperparamet
 
 ## Dependencies :mag:
 
-1. This repository's code was tested with Python version `3.8.12`. To sync dependencies, we recommend creating a virtual environment and installing the relevant packages via `pip`:
+This repository's code was tested with Python version `3.8.12`. To sync dependencies, we recommend creating a virtual environment and installing the relevant packages via `pip`:
 
-    ```
-    $ pip install -r requirements.txt
-    ```
-
-2. **Optional:** To access pre-computed data, this repository requires a working installation of Git [`LFS`](https://git-lfs.github.com/). We utilized version `v3.0.1` in our implementation.
+```
+$ pip install -r requirements.txt
+```
 
 ## Initialization :fire:
 
@@ -22,13 +20,7 @@ Our classifier was trained on a randomly split training set using a hyperparamet
     $ bash scripts/prepare_data.sh
     ```
 
-2. **Optional:** To clone the `policy-classifier-data` submodule containing a pre-computed final model (Git LFS object), simply execute:
-
-    ```
-    $ bash scripts/prepare_submodules.sh
-    ```
-
-3. **Optional:** Initialize git hooks to manage development workflows such as linting shell scripts and keeping python dependencies up-to-date:
+2. **Optional:** Initialize git hooks to manage development workflows such as linting shell scripts and keeping python dependencies up-to-date:
 
     ```
     $ bash scripts/prepare_git_hooks.sh
