@@ -4,6 +4,8 @@ This repository aims to reproduce a [Random Forests](https://en.wikipedia.org/wi
 
 Our classifier was trained on a randomly split training set using a hyperparameter grid-search and 5-fold cross validation. It achieved a mean test ROC-AUC score of `0.955` during cross-validation. We then conducted post-hoc threshold tuning on a holdout set and found that a threshold of `0.752` was required to reach a precision of `0.99` for the privacy-policy or positive label. Finally after threshold tuning, we trained our classifier with the best performing hyperparameters on all training data to produce a production-ready model.
 
+The final model can be found as a Git LFS object in the [`policy-classifier-data`](https://github.com/infsys-lab/policy-classifier-data) repository.
+
 ## Dependencies :mag:
 
 This repository's code was tested with Python version `3.8.12`. To sync dependencies, we recommend creating a virtual environment and installing the relevant packages via `pip`:
