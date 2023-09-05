@@ -73,7 +73,7 @@ class Sorting_Help_Formatter(argparse.HelpFormatter):
         actions = sorted(actions, key=attrgetter("option_strings"))
         super(Sorting_Help_Formatter, self).add_arguments(actions)
 
-    def _format_usage(
+    def _format_usage(  # type: ignore
         self,
         usage: str,
         actions: Iterable[argparse.Action],
