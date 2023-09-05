@@ -8,11 +8,18 @@ The final model can be found as a Git LFS object in the [`policy-classifier-data
 
 ## Dependencies :mag:
 
-This repository's code was tested with Python version `3.8.12`. To sync dependencies, we recommend creating a virtual environment and installing the relevant packages via `pip`:
+1.  This repository's code was tested with Python version `3.8.12`. We recommend creating a virtual environment with the same python version and installing dependencies with [`poetry`](https://python-poetry.org/):
 
-```
-$ pip install -r requirements.txt
-```
+    ```
+    $ poetry install
+    ```
+
+    Alternatively, install dependencies in the virtual environment using `pip`:
+    ```
+    $ pip install -r requirements.txt
+    ```
+
+2. **Optional:** To further develop this repository, install [`pre-commit`](https://github.com/pre-commit/pre-commit) to setup pre-commit hooks for code-checks.
 
 ## Initialization :fire:
 
@@ -22,10 +29,10 @@ $ pip install -r requirements.txt
     $ bash scripts/prepare_data.sh
     ```
 
-2. **Optional:** Initialize git hooks to manage development workflows such as linting shell scripts and keeping python dependencies up-to-date:
+2. **Optional:** To install pre-commit hooks for further development of this repository, execute:
 
     ```
-    $ bash scripts/prepare_git_hooks.sh
+    $ pre-commit install
     ```
 
 ## Usage :snowflake:
@@ -89,21 +96,15 @@ model.predict_proba(["some markdown text", "some policy text"])[:,1]
 
 ## Test :microscope:
 
-1. To run unit and integration tests, execute:
+To run unit and integration tests, execute:
 
-    ```
-    $ pytest
-    ```
-
-2. To run a `mypy` type-integrity test, execute:
-
-    ```
-    $ mypy
-    ```
+```
+$ pytest
+```
 
 ## Citation :book:
 
-If you found this repository helpful, we kindly ask you to cite our publication titled [Privacy and Customer’s Education: NLP for Information Resources Suggestions and Expert Finder Systems](https://link.springer.com/chapter/10.1007/978-3-031-05563-8_5): 
+If you found this repository helpful, we kindly ask you to cite our publication titled [Privacy and Customer’s Education: NLP for Information Resources Suggestions and Expert Finder Systems](https://link.springer.com/chapter/10.1007/978-3-031-05563-8_5):
 
 ```bibtex
 @InProceedings{10.1007/978-3-031-05563-8_5,
