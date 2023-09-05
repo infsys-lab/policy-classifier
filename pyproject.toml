@@ -13,7 +13,7 @@ ipdb = "^0.13.9"
 dill = "^0.3.4"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^0.910"
+mypy = "^0.991"
 pytest = "^7.1.2"
 pytest-cov = "^4.1.0"
 black = "^23.7.0"
