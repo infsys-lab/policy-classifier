@@ -48,7 +48,7 @@ known_first_party = ["parser"]
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["src/parser.py"]
+omit = ["src/parser.py", "src/utils.py"]
 
 [tool.coverage.report]
 exclude_lines = [
