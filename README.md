@@ -26,7 +26,7 @@ The final model can be found as a Git LFS object in the [`policy-classifier-data
 1. To download and prepare annotated privacy-policies data for training, simply execute:
 
     ```
-    $ bash scripts/prepare_data.sh
+    $ bash scripts/prepare.sh
     ```
 
 2. **Optional:** To install pre-commit hooks for further development of this repository, execute:

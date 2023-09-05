@@ -4,7 +4,7 @@ set -e
 # usage function
 usage() {
   cat <<EOF
-usage: prepare_data.sh [-h|--help]
+usage: prepare.sh [-h|--help]
 
 This script downloads and unzips necessary data to
 train the privacy policy classifier
