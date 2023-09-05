@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from train import get_run_dir
 import os
+
+from train import get_run_dir
 
 
 def test_get_run_dir():

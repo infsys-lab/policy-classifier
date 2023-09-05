@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from operator import attrgetter
-from parser import get_train_parser
-from train import main
-import pytest
 import json
 import os
+from operator import attrgetter
+
+import pytest
+
+from parser import get_train_parser
+from train import main
 
 
 @pytest.mark.integration

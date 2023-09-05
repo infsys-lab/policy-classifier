@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Iterable, Optional, cast
-from operator import attrgetter
-from datetime import datetime
 import argparse
 import logging
 import os
 import re
+from datetime import datetime
+from operator import attrgetter
+from typing import Iterable, Optional, cast
 
 # create formatter
 FORMATTER = logging.Formatter(

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from train import dump_args
-from argparse import Namespace
-import pytest
 import json
 import os
+from argparse import Namespace
+
+import pytest
+
+from train import dump_args
 
 
 @pytest.mark.parametrize(

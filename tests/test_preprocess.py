@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from train import preprocess
 import pytest
+
+from train import preprocess
 
 
 @pytest.mark.parametrize(
