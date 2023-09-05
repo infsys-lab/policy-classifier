@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from train import get_grid_search_hyperparameters
 from argparse import Namespace
+
 import pytest
+
+from train import get_grid_search_hyperparameters
 
 DEFAULT_HYPERPARAMETERS = {
     "vect__ngram_range": [(1, 2), (1, 4)],

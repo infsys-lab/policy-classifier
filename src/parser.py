@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from utils import ArgparseFormatter, file_path
 import argparse
 import os
+
+from utils import ArgparseFormatter, file_path
 
 
 def get_train_parser() -> argparse.ArgumentParser:

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from train import dump_metrics
-import pytest
 import json
 import os
+
+import pytest
+
+from train import dump_metrics
 
 
 @pytest.mark.parametrize(
