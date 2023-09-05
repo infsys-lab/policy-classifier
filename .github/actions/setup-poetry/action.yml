@@ -1,0 +1,38 @@
+name: Setup poetry
+
+inputs:
+  poetry-version:
+    description: 'Poetry version'
+    required: false
+    default: '1.5.1'
+  python-version:
+    description: 'Python version'
+    required: false
+    default: '3.8.13'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Load cached .local
+      uses: actions/cache@v3
+      id: cache-dotlocal
+      with:
+        path: ~/.local
+        key: dotlocal-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ inputs.poetry-version }}
+
+    - name: Install poetry
+      if: steps.cache-dotlocal.outputs.cache-hit != 'true'
+      uses: snok/install-poetry@v1
+      with:
+        version: ${{ inputs.poetry-version }}
+        installer-parallel: true
+
+    - name: Configure poetry
+      shell: bash
+      run: >
+        poetry config virtualenvs.in-project true
