@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from src.train import get_closest_value_index
+from train import get_closest_value_index
 import numpy as np
 import pytest
 

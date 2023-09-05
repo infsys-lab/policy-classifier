@@ -4,7 +4,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
-from src.train import dump_model, preprocess
+from train import dump_model, preprocess
 import pytest
 import dill
 import os
