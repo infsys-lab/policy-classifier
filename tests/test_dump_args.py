@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from src.train import dump_args
+from train import dump_args
 from argparse import Namespace
 import pytest
 import json

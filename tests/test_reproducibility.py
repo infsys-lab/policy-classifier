@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from operator import attrgetter
-from src.parser import get_train_parser
-from src.train import main
+from parser import get_train_parser
+from train import main
 import pytest
 import json
 import os
@@ -26,13 +26,13 @@ def test_reproducibility(seed, get_dummy_data, monkeypatch, tmpdir):
         return None
 
     monkeypatch.setattr("ipdb.set_trace", lambda: None)
-    monkeypatch.setattr("src.train.get_run_dir", mock_get_first_run_dir)
-    monkeypatch.setattr("src.train.get_raw_data", mock_get_raw_data)
-    monkeypatch.setattr("src.train.add_file_handler", mock_add_file_handler)
+    monkeypatch.setattr("train.get_run_dir", mock_get_first_run_dir)
+    monkeypatch.setattr("train.get_raw_data", mock_get_raw_data)
+    monkeypatch.setattr("train.add_file_handler", mock_add_file_handler)
     parser = get_train_parser()
     args = parser.parse_args(["--debug"])
     main(args)
-    monkeypatch.setattr("src.train.get_run_dir", mock_get_second_run_dir)
+    monkeypatch.setattr("train.get_run_dir", mock_get_second_run_dir)
     main(args)
     with open(os.path.join(mock_get_first_run_dir(),
                            "metrics.json")) as input_file_stream:

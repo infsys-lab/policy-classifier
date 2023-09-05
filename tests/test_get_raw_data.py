@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from src.train import get_raw_data
+from train import get_raw_data
 from argparse import Namespace
 import pandas as pd
 import pytest
