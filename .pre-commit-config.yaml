@@ -1,0 +1,78 @@
+repos:
+  - repo: local
+    hooks:
+      - id: python-black
+        name: python-black
+        entry: poetry run black
+        args: [--diff, --check]
+        language: system
+        files: ^src/|^tests/
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: python-isort
+        name: python-isort
+        entry: poetry run isort
+        args: [--diff, --check-only]
+        language: system
+        files: ^src/|^tests/
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: python-flake8
+        name: python-flake8
+        entry: poetry run flake8
+        args: [--show-source, --statistics]
+        language: system
+        files: ^src/|^tests/
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: python-mypy
+        name: python-mypy
+        entry: poetry run mypy
+        language: system
+        files: ^src/
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: poetry-export-main
+        name: poetry-export-main
+        entry: poetry export
+        args: [-f, requirements.txt, --without-hashes, -o, requirements.txt]
+        language: system
+        files: ^pyproject\.toml$|^poetry\.lock$
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: poetry-export-dev
+        name: poetry-export-dev
+        entry: poetry export
+        args: [-f, requirements.txt, --without-hashes, --with, dev, -o, requirements-dev.txt]
+        language: system
+        files: ^pyproject\.toml$|^poetry\.lock$
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        entry: poetry run shellcheck
+        language: system
+        files: ^scripts/
+        types: [shell]
+
+  - repo: local
+    hooks:
+      - id: shfmt
+        name: shfmt
+        entry: poetry run shfmt
+        args: [-i, '2', -d]
+        language: system
+        files: ^scripts/
+        types: [shell]
