@@ -27,6 +27,7 @@ def test_reproducibility(seed, get_dummy_data, monkeypatch, tmpdir):
         return None
 
     monkeypatch.setattr("ipdb.set_trace", lambda: None)
+    monkeypatch.setattr("parser.file_path", lambda path: path)
     monkeypatch.setattr("train.get_run_dir", mock_get_first_run_dir)
     monkeypatch.setattr("train.get_raw_data", mock_get_raw_data)
     monkeypatch.setattr("train.add_file_handler", mock_add_file_handler)
