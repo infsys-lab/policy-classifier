@@ -1,2 +1,13 @@
+# common extra files
 *.pyc
 *.temp
+*.cache
+
+# test outputs and artifacts
+.coverage*
+coverage.xml
+pytest.xml
+tests/artifacts/
+
+# virtual environment (if used)
+.venv
