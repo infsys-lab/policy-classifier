@@ -75,11 +75,13 @@ def get_grid_search_hyperparameters(args: argparse.Namespace) -> Dict[Any, Any]:
     return parameters
 
 
-def get_closest_value_index(vector: np.ndarray, value: float) -> int:
+def get_closest_value_index(
+    vector: np.ndarray, value: float  # type: ignore[type-arg]
+) -> int:
     return np.argmin(np.abs(vector - value)).item()
 
 
-def dump_metrics(run_dir: str, metrics: Dict) -> None:
+def dump_metrics(run_dir: str, metrics: Dict) -> None:  # type: ignore[type-arg]
     metrics_file = os.path.join(run_dir, "metrics.json")
     LOGGER.info("Dumping metrics to disk: %s" % metrics_file)
     with open(metrics_file, "w") as output_file_stream:
