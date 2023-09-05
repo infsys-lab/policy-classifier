@@ -20,10 +20,8 @@ class RandomSequenceBinaryData:
         random.seed(seed)
         self.seed = seed
         self.X = [
-            " ".join([
-                random.choice(self.SUBSET)
-                for self.SUBSET in self.POSSIBILITIES
-            ]) for _ in range(dim)
+            " ".join([random.choice(self.SUBSET) for self.SUBSET in self.POSSIBILITIES])
+            for _ in range(dim)
         ]
         self.y = [random.randint(0, 1) for _ in range(dim)]
 

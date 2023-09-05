@@ -27,8 +27,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_run_dir() -> str:
-    return os.path.join(os.path.dirname(os.path.dirname(__file__)), "runs",
-                        "run_" + timestamp())
+    return os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "runs", "run_" + timestamp()
+    )
 
 
 def dump_args(args: argparse.Namespace, run_dir: str) -> None:
@@ -54,8 +55,7 @@ def preprocess(document: str) -> str:
     return document.lower()
 
 
-def get_grid_search_hyperparameters(
-        args: argparse.Namespace) -> Dict[Any, Any]:
+def get_grid_search_hyperparameters(args: argparse.Namespace) -> Dict[Any, Any]:
     if args.debug:
         parameters = {"vect__ngram_range": [(1, 2)]}
         args.cv_splits = 2
@@ -67,7 +67,7 @@ def get_grid_search_hyperparameters(
             "vect__min_df": (0.1, 0.2, 0.3),
             "clf__max_depth": (10, 15),
             "clf__n_estimators": (100, 200),
-            "clf__min_samples_leaf": (2, 3)
+            "clf__min_samples_leaf": (2, 3),
         }
         LOGGER.info("Grid-search parameters %s" % parameters)
     return parameters
@@ -98,8 +98,7 @@ def main(args: argparse.Namespace) -> None:
 
     # update logger
     global LOGGER
-    add_file_handler(LOGGER, args.logging_level,
-                     os.path.join(run_dir, "session.log"))
+    add_file_handler(LOGGER, args.logging_level, os.path.join(run_dir, "session.log"))
 
     # log and dump args file
     dump_args(args, run_dir)
@@ -109,28 +108,35 @@ def main(args: argparse.Namespace) -> None:
 
     # split raw data into train and test sets
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.1, random_state=args.random_seed)
+        X, y, test_size=0.1, random_state=args.random_seed
+    )
 
     # initialize policy classifier (pipeline)
-    policy_clf = Pipeline([
-        ("vect", TfidfVectorizer(stop_words="english",
-                                 preprocessor=preprocess)),
-        ("clf",
-         RandomForestClassifier(class_weight="balanced",
-                                random_state=args.random_seed)),
-    ])
+    policy_clf = Pipeline(
+        [
+            ("vect", TfidfVectorizer(stop_words="english", preprocessor=preprocess)),
+            (
+                "clf",
+                RandomForestClassifier(
+                    class_weight="balanced", random_state=args.random_seed
+                ),
+            ),
+        ]
+    )
     LOGGER.info("Base classifier: %s" % policy_clf)
 
     # retrieve grid-search parameter space
     parameters = get_grid_search_hyperparameters(args)
 
     # define grid-search model wrapper
-    gs_policy_clf = GridSearchCV(policy_clf,
-                                 parameters,
-                                 scoring=args.scoring,
-                                 cv=args.cv_splits,
-                                 n_jobs=args.n_jobs,
-                                 verbose=4)
+    gs_policy_clf = GridSearchCV(
+        policy_clf,
+        parameters,
+        scoring=args.scoring,
+        cv=args.cv_splits,
+        n_jobs=args.n_jobs,
+        verbose=4,
+    )
 
     # fit on data and log current state
     gs_policy_clf.fit(X_train, y_train)
@@ -141,12 +147,11 @@ def main(args: argparse.Namespace) -> None:
     y_probs_test = gs_policy_clf.best_estimator_.predict_proba(X_test)[:, 1]
 
     # compute precision-recall data based on probabilities
-    precision, recall, thresholds = precision_recall_curve(
-        y_test, y_probs_test)
+    precision, recall, thresholds = precision_recall_curve(y_test, y_probs_test)
 
-    clf_report = classification_report(y_test,
-                                       (y_probs_test >= 0.5).astype(int),
-                                       output_dict=True)
+    clf_report = classification_report(
+        y_test, (y_probs_test >= 0.5).astype(int), output_dict=True
+    )
 
     # find the nearest precision to specified precision threshold
     # NOTE: last elements of precisiona and recall are constants for graphs
@@ -154,11 +159,11 @@ def main(args: argparse.Namespace) -> None:
     index = get_closest_value_index(precision[:-1], args.precision_threshold)
 
     # get precision, recall and threshold that are closest to desired
-    precision, recall, threshold = precision[index], recall[index], thresholds[
-        index]
+    precision, recall, threshold = precision[index], recall[index], thresholds[index]
     LOGGER.info("Optimization condition satisfied")
-    LOGGER.info("Precision: %s | Recall: %s | Threshold: %s" %
-                (precision, recall, threshold))
+    LOGGER.info(
+        "Precision: %s | Recall: %s | Threshold: %s" % (precision, recall, threshold)
+    )
 
     # compile all metrics together here
     metrics = {
@@ -170,8 +175,8 @@ def main(args: argparse.Namespace) -> None:
         "threshold_metrics": {
             "threshold": threshold,
             "precision": precision,
-            "recall": recall
-        }
+            "recall": recall,
+        },
     }
 
     # log and dump all metrics

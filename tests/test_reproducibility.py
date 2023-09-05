@@ -12,7 +12,6 @@ import os
 @pytest.mark.integration
 @pytest.mark.parametrize("seed", [0, 1, 2, 3, 4, 5])
 def test_reproducibility(seed, get_dummy_data, monkeypatch, tmpdir):
-
     def mock_get_first_run_dir(*args, **kwargs):
         return os.path.join(tmpdir, "run_1")
 
@@ -34,12 +33,13 @@ def test_reproducibility(seed, get_dummy_data, monkeypatch, tmpdir):
     main(args)
     monkeypatch.setattr("train.get_run_dir", mock_get_second_run_dir)
     main(args)
-    with open(os.path.join(mock_get_first_run_dir(),
-                           "metrics.json")) as input_file_stream:
+    with open(
+        os.path.join(mock_get_first_run_dir(), "metrics.json")
+    ) as input_file_stream:
         metrics_first = json.load(input_file_stream)
-    with open(os.path.join(mock_get_second_run_dir(),
-                           "metrics.json")) as input_file_stream:
+    with open(
+        os.path.join(mock_get_second_run_dir(), "metrics.json")
+    ) as input_file_stream:
         metrics_second = json.load(input_file_stream)
     assert metrics_first["clf_report"] == metrics_second["clf_report"]
-    assert metrics_first["threshold_metrics"] == metrics_second[
-        "threshold_metrics"]
+    assert metrics_first["threshold_metrics"] == metrics_second["threshold_metrics"]

@@ -18,8 +18,9 @@ def mock_df(monkeypatch):
         return pd.DataFrame(
             data={
                 "policy_text": ["testing once", "testing twice"],
-                "is_policy": [False, True]
-            })
+                "is_policy": [False, True],
+            }
+        )
 
     monkeypatch.setattr(pd, "read_csv", mock_df_inner)
 
